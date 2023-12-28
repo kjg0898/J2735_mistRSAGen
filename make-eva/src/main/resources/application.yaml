@@ -1,6 +1,0 @@
-module:
-  name: make-eva
-  vertx:
-    profile:
-      active: test
-      multi: false

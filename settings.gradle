@@ -1,7 +1,5 @@
 rootProject.name = 'j2735_msitMsgGen'
 include 'msit-common'
 include 'make-rsa'
-include 'make-spat'
-include 'make-tim'
-include 'make-eva'
+
 

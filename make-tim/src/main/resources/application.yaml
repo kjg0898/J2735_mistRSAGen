@@ -1,6 +1,0 @@
-module:
-  name: make-tim
-  vertx:
-    profile:
-      active: test
-      multi: false
