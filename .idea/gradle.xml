@@ -9,10 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/make-eva" />
             <option value="$PROJECT_DIR$/make-rsa" />
-            <option value="$PROJECT_DIR$/make-spat" />
-            <option value="$PROJECT_DIR$/make-tim" />
             <option value="$PROJECT_DIR$/msit-common" />
           </set>
         </option>
