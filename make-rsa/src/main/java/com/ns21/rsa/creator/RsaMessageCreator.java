@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,4 +88,41 @@ public class RsaMessageCreator extends AbstractVerticle {
             logger.error("Error in message processing", e);
         }
     }
+    public static List<Integer> ITISRSACodeGen(String categoryName, String vehicleState, Integer visibilityLevel) {
+        List<Integer> itisCodes = new ArrayList<>();
+
+        categoryName = (categoryName != null) ? categoryName : "0";
+        vehicleState = (vehicleState != null) ? vehicleState : "0";
+        visibilityLevel = (visibilityLevel != null) ? visibilityLevel : 0;
+
+        switch (categoryName) {
+            case "emergencyVehicle":
+                itisCodes.add(123);
+                break;
+            default:
+                itisCodes.add(0); // categoryName이 없거나 일치하지 않을 때
+                break;
+        }
+
+        switch (vehicleState) {
+            case "moving":
+                itisCodes.add(456);
+                break;
+            default:
+                itisCodes.add(0); // vehicleState가 없거나 일치하지 않을 때
+                break;
+        }
+
+        switch (visibilityLevel) {
+            case 4:
+                itisCodes.add(789);
+                break;
+            default:
+                itisCodes.add(0); // visibilityLevel이 없거나 일치하지 않을 때
+                break;
+        }
+
+        return itisCodes;
+    }
+
 }
