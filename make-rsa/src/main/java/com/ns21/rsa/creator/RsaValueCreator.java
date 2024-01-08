@@ -74,65 +74,72 @@ public class RsaValueCreator {
 
                     // "description" 필드에 ITIScode 값을 할당합니다. 주의할 차량과 차량의 이동상태,가시성 낮음 추가해야함 itis 코드를 이용하여 로직 추가해야함 instance.json 의 category_name , frame_annotation.json 의  vehicle_state
                     rsaMessage.put("typeEvent", 0);
-                    String categoryName = null;
-                    String vehicleState = null;
-                    if (uuidMap.containsKey("instance_categoryName")) {
-                        categoryName = (String) uuidMap.get("instance_categoryName");  // instance.json에서 추출
-                    } else {
-                        categoryName = "0";
-                    }
-                    if (uuidMap.containsKey("frameAnnotation_attribute") && uuidMap.get("frameAnnotation_attribute") != null) {
-                        Map<String, Object> frameAnnotationAttribute = (Map<String, Object>) uuidMap.get("frameAnnotation_attribute"); // frame_annotation.json에서 추출
-                        vehicleState = (String) frameAnnotationAttribute.get("vehicle_state");
-                    } else {
-                        vehicleState = "0";
-                    }
+                    // Determine ITIS codes for the message
+                    String categoryName = uuidMap.containsKey("instance_categoryName") ? (String) uuidMap.get("instance_categoryName") : "0";
+                    String vehicleState = uuidMap.containsKey("frameAnnotation_attribute") && uuidMap.get("frameAnnotation_attribute") != null
+                            ? (String) ((Map<String, Object>) uuidMap.get("frameAnnotation_attribute")).get("vehicle_state") : "0";
                     List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState);
-                    rsaMessage.put("description", descriptionValues);
-                    //  여기까지가 ITIScode 할당 하는 로직
+
+                    // categoryName 또는 vehicleState가 유효하지 않은 경우 이 메시지를 건너뛰거나 생략함. "description"
+                    if (descriptionValues.isEmpty()) {
+                        continue; // 현재 생성을 건너뛰고 다음 메세지를 생성합니다.
+                    }
+                        rsaMessage.put("description", descriptionValues);
+                        //  String categoryName = null;
+                        //  String vehicleState = null;
+                        //  if (uuidMap.containsKey("instance_categoryName")) {
+                        //      categoryName = (String) uuidMap.get("instance_categoryName");  // instance.json에서 추출
+                        //  } else {
+                        //      categoryName = "0";
+                        //  }
+                        //  if (uuidMap.containsKey("frameAnnotation_attribute") && uuidMap.get("frameAnnotation_attribute") != null) {
+                        //      Map<String, Object> frameAnnotationAttribute = (Map<String, Object>) uuidMap.get("frameAnnotation_attribute"); // frame_annotation.json에서 추출
+                        //      vehicleState = (String) frameAnnotationAttribute.get("vehicle_state");
+                        //  } else {
+                        //      vehicleState = "0";
+                        //  }
+                        //  List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState);
+                        //  rsaMessage.put("description", descriptionValues);
+                        //  여기까지가 ITIScode 할당 하는 로직
 
 
-                    rsaMessage.put("priority", "01");
-                    rsaMessage.put("heading", heading);   //sensor.json 의 rotation
+                        rsaMessage.put("priority", "01");
+                        rsaMessage.put("heading", heading);   //sensor.json 의 rotation
 
-                    // convertTimestampToUtcMap에는 문자열 형태의 타임스탬프를 전달
-                    position.put("utcTime", convertTimestampToUtcMap(Long.toString(timestamp)));
-                    position.put("long", utmToLatLon[1]);  // ego_pose.json 파일의 translation,
-                    position.put("lat", utmToLatLon[0]);  // ego_pose.json 파일의 translation,
-                    position.put("elevation", utmToLatLon[2]);  // ego_pose.json 파일의 translation,
-                    rsaMessage.put("position", position);
-                    List<Map<String, Object>> regional = new ArrayList<>();
-                    Map<String, Object> regionalItem = new LinkedHashMap<>();
-                    regionalItem.put("regionId", 4);
+                        // convertTimestampToUtcMap에는 문자열 형태의 타임스탬프를 전달
+                        position.put("utcTime", convertTimestampToUtcMap(Long.toString(timestamp)));
+                        position.put("long", utmToLatLon[1]);  // ego_pose.json 파일의 translation,
+                        position.put("lat", utmToLatLon[0]);  // ego_pose.json 파일의 translation,
+                        position.put("elevation", utmToLatLon[2]);  // ego_pose.json 파일의 translation,
+                        rsaMessage.put("position", position);
+                        List<Map<String, Object>> regional = new ArrayList<>();
+                        Map<String, Object> regionalItem = new LinkedHashMap<>();
+                        regionalItem.put("regionId", 4);
 
-                    Map<String, Object> regExtValue = new LinkedHashMap<>();
-                    Map<String, Object> cits = new LinkedHashMap<>();
-                    cits.put("stopID", uuidMap.get("log_location"));//log.json 의 location 로그가 캡처된 위치/명칭
-                    cits.put("text", uuidMap.get("frameData_uuid"));  //frameData.json 의 uuid
-                    cits.put("sendUniqueId", uuidMap.get("sensor_name")); //sensor.json 의 name // 어떤 장비로 인지 하였는지
-                    regExtValue.put("cits", cits);
+                        Map<String, Object> regExtValue = new LinkedHashMap<>();
+                        Map<String, Object> cits = new LinkedHashMap<>();
+                        cits.put("stopID", uuidMap.get("log_location"));//log.json 의 location 로그가 캡처된 위치/명칭
+                        cits.put("text", uuidMap.get("frameData_uuid"));  //frameData.json 의 uuid
+                        cits.put("sendUniqueId", uuidMap.get("sensor_name")); //sensor.json 의 name // 어떤 장비로 인지 하였는지
+                        regExtValue.put("cits", cits);
 
-                    regionalItem.put("regExtValue", regExtValue);
-                    regional.add(regionalItem);
+                        regionalItem.put("regExtValue", regExtValue);
+                        regional.add(regionalItem);
 
-                    rsaMessage.put("regional", regional);
+                        rsaMessage.put("regional", regional);
 
-                    // 최종적인 RSA 메시지를 구성합니다.
-                    messages.add(mapper.writeValueAsString(rsaMessage));
-                }
-            } catch (ClassCastException e) {
-                // 타입 캐스팅 예외 처리 로직
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                // 널 포인터 예외 처리 로직
+                        // 최종적인 RSA 메시지를 구성합니다.
+                        messages.add(mapper.writeValueAsString(rsaMessage));
+                    }
+            } catch (ClassCastException | NullPointerException e) {
                 e.printStackTrace();
             }
         }
         return messages; // 여러 메시지를 리스트로 반환
     }
 
-    public static List<Integer> getDescriptionValuesFromSomeSource(
-            String categoryName, String vehicleState) {
+    public static List<Integer> getDescriptionValuesFromSomeSource(String categoryName, String vehicleState) {
+
         // ITIS 코드 변환 함수를 호출하여 descriptionValues를 생성합니다.
         return ITISRSACodeGen(categoryName, vehicleState);
     }

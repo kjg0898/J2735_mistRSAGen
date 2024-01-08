@@ -90,46 +90,105 @@ public class RsaMessageCreator extends AbstractVerticle {
         }
     }
 
+
     public static List<Integer> ITISRSACodeGen(String categoryName, String vehicleState) {
         List<Integer> itisCodes = new ArrayList<>();
 
-        categoryName = (categoryName != null) ? categoryName : "0";
-        vehicleState = (vehicleState != null) ? vehicleState : "0";
-
-        //instance_categoryName의 값은 하기와 같다
-        switch (categoryName) {
-            case "dynamic_object.vehicle.truck":
-                itisCodes.add(ItisCodes.HAZARDOUS_MATERIAL_VEHICLE);
-                break;
-            case "dynamic_object.human.pedestrian":
-                itisCodes.add(ItisCodes.PEDESTRIAN_ON_ROAD);
-                break;
-            case "movable_object.barrier":
-                itisCodes.add(ItisCodes.ROAD_CLOSURE_LANE_BLOCKAGE);
-                break;
-            case "movable_object.traffic_cone":
-                itisCodes.add(ItisCodes.MOBILE_CONSTRUCTION);
-                break;
-            default:
-                itisCodes.add(0); // categoryName이 없거나 일치하지 않을 때
-                break;
+        // categoryName에 대한 로직
+        if (categoryName != null && !categoryName.equals("0")) {
+            Integer categoryCode = getCategoryITISCode(categoryName);
+            if (categoryCode != null) { // 유효한 코드가 있을 경우에만 추가
+                itisCodes.add(categoryCode);
+            }
         }
-
-        //frameAnnotation_attribute 의 vehicle_state 값은 하기와 같다
-        //stopped
-        //moving
-        switch (vehicleState) {
-            case "moving":
-                itisCodes.add(ItisCodes.STOP_AND_GO_TRAFFIC);
-                break;
-            case "stopped":
-                itisCodes.add(ItisCodes.STOPPED_VEHICLE);
-                break;
-            default:
-                itisCodes.add(0); // vehicleState가 없거나 일치하지 않을 때
-                break;
+        // vehicleState에 대한 로직
+        if (vehicleState != null && !vehicleState.equals("0")) {
+            Integer vehicleStateCode = getVehicleStateITISCode(vehicleState);
+            if (vehicleStateCode != null) { // 유효한 코드가 있을 경우에만 추가
+                itisCodes.add(vehicleStateCode);
+            }
         }
         return itisCodes;
     }
+
+
+    // 특정 ITIS 코드를 결정하기 위한 예시 보조 메서드들
+    private static Integer getCategoryITISCode(String categoryName) {
+        // categoryName을 기반으로 ITIS 코드를 반환합니다.
+        // 해당 카테고리에 유효한 ITIS 코드가 없으면 null을 반환합니다.
+        switch (categoryName) {
+            case "dynamic_object.vehicle.truck":
+                return ItisCodes.HAZARDOUS_MATERIAL_VEHICLE;
+            case "dynamic_object.human.pedestrian":
+                return ItisCodes.PEDESTRIAN_ON_ROAD;
+            case "movable_object.barrier":
+                return ItisCodes.ROAD_CLOSURE_LANE_BLOCKAGE;
+            case "movable_object.traffic_cone":
+                return ItisCodes.MOBILE_CONSTRUCTION;
+            default:
+                return null;
+
+        }
+}
+    private static Integer getVehicleStateITISCode(String vehicleState) {
+        // vehicleState을 기반으로 ITIS 코드를 반환합니다.
+        // 해당 차량 상태에 유효한 ITIS 코드가 없으면 null을 반환합니다.
+        switch (vehicleState) {
+                   case "moving":
+                       return ItisCodes.STOP_AND_GO_TRAFFIC;
+                   case "stopped":
+                       return ItisCodes.STOPPED_VEHICLE;
+            default:
+                return null; // 이 차량 상태에 유효한 ITIS 코드가 없음을 나타냅니다.
+        }
+    }
+
+
+
+
+//
+  //          public static List<Integer> ITISRSACodeGen(String categoryName, String vehicleState) {
+//
+  //      categoryName = (categoryName != null) ? categoryName : "0";
+  //      vehicleState = (vehicleState != null) ? vehicleState : "0";
+//
+  //      if (categoryName != null && !categoryName.equals("0")) {
+  //      //instance_categoryName의 값은 하기와 같다
+  //      switch (categoryName) {
+  //          case "dynamic_object.vehicle.truck":
+  //              itisCodes.add(ItisCodes.HAZARDOUS_MATERIAL_VEHICLE);
+  //              break;
+  //          case "dynamic_object.human.pedestrian":
+  //              itisCodes.add(ItisCodes.PEDESTRIAN_ON_ROAD);
+  //              break;
+  //          case "movable_object.barrier":
+  //              itisCodes.add(ItisCodes.ROAD_CLOSURE_LANE_BLOCKAGE);
+  //              break;
+  //          case "movable_object.traffic_cone":
+  //              itisCodes.add(ItisCodes.MOBILE_CONSTRUCTION);
+  //              break;
+  //          default:
+  //              itisCodes.add(0); // categoryName이 없거나 일치하지 않을 때
+  //              break;
+  //      }
+  //  }
+  //      if (vehicleState != null && !vehicleState.equals("0")) {
+  //          //frameAnnotation_attribute 의 vehicle_state 값은 하기와 같다
+  //          //stopped
+  //          //moving
+  //          switch (vehicleState) {
+  //              case "moving":
+  //                  itisCodes.add(ItisCodes.STOP_AND_GO_TRAFFIC);
+  //                  break;
+  //              case "stopped":
+  //                  itisCodes.add(ItisCodes.STOPPED_VEHICLE);
+  //                  break;
+  //              default:
+  //                  itisCodes.add(0); // vehicleState가 없거나 일치하지 않을 때
+  //                  break;
+  //          }
+  //      }
+  //      return itisCodes;
+  //  }
 
 }
