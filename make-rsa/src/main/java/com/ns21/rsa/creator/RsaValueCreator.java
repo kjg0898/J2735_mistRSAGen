@@ -84,36 +84,37 @@ public class RsaValueCreator {
                     if (descriptionValues.isEmpty()) {
                         continue; // 현재 생성을 건너뛰고 다음 메세지를 생성합니다.
                     }
-                        rsaMessage.put("description", descriptionValues);
+                    rsaMessage.put("description", descriptionValues);
+                    // 여기까지 ITIS 코드 추가 로직
 
-                        rsaMessage.put("priority", "01");
-                        rsaMessage.put("heading", heading);   //sensor.json 의 rotation
+                    rsaMessage.put("priority", "01");
+                    rsaMessage.put("heading", heading);   //sensor.json 의 rotation
 
-                        // convertTimestampToUtcMap에는 문자열 형태의 타임스탬프를 전달
-                        position.put("utcTime", convertTimestampToUtcMap(Long.toString(timestamp)));
-                        position.put("long", utmToLatLon[1]);  // ego_pose.json 파일의 translation,
-                        position.put("lat", utmToLatLon[0]);  // ego_pose.json 파일의 translation,
-                        position.put("elevation", utmToLatLon[2]);  // ego_pose.json 파일의 translation,
-                        rsaMessage.put("position", position);
-                        List<Map<String, Object>> regional = new ArrayList<>();
-                        Map<String, Object> regionalItem = new LinkedHashMap<>();
-                        regionalItem.put("regionId", 4);
+                    // convertTimestampToUtcMap에는 문자열 형태의 타임스탬프를 전달
+                    position.put("utcTime", convertTimestampToUtcMap(Long.toString(timestamp)));
+                    position.put("long", utmToLatLon[1]);  // ego_pose.json 파일의 translation,
+                    position.put("lat", utmToLatLon[0]);  // ego_pose.json 파일의 translation,
+                    position.put("elevation", utmToLatLon[2]);  // ego_pose.json 파일의 translation,
+                    rsaMessage.put("position", position);
+                    List<Map<String, Object>> regional = new ArrayList<>();
+                    Map<String, Object> regionalItem = new LinkedHashMap<>();
+                    regionalItem.put("regionId", 4);
 
-                        Map<String, Object> regExtValue = new LinkedHashMap<>();
-                        Map<String, Object> cits = new LinkedHashMap<>();
-                        cits.put("stopID", uuidMap.get("log_location"));//log.json 의 location 로그가 캡처된 위치/명칭
-                        cits.put("text", uuidMap.get("frameData_uuid"));  //frameData.json 의 uuid
-                        cits.put("sendUniqueId", uuidMap.get("sensor_name")); //sensor.json 의 name // 어떤 장비로 인지 하였는지
-                        regExtValue.put("cits", cits);
+                    Map<String, Object> regExtValue = new LinkedHashMap<>();
+                    Map<String, Object> cits = new LinkedHashMap<>();
+                    cits.put("stopID", uuidMap.get("log_location"));//log.json 의 location 로그가 캡처된 위치/명칭
+                    cits.put("text", uuidMap.get("frameData_uuid"));  //frameData.json 의 uuid
+                    cits.put("sendUniqueId", uuidMap.get("sensor_name")); //sensor.json 의 name // 어떤 장비로 인지 하였는지
+                    regExtValue.put("cits", cits);
 
-                        regionalItem.put("regExtValue", regExtValue);
-                        regional.add(regionalItem);
+                    regionalItem.put("regExtValue", regExtValue);
+                    regional.add(regionalItem);
 
-                        rsaMessage.put("regional", regional);
+                    rsaMessage.put("regional", regional);
 
-                        // 최종적인 RSA 메시지를 구성합니다.
-                        messages.add(mapper.writeValueAsString(rsaMessage));
-                    }
+                    // 최종적인 RSA 메시지를 구성합니다.
+                    messages.add(mapper.writeValueAsString(rsaMessage));
+                }
             } catch (ClassCastException | NullPointerException e) {
                 e.printStackTrace();
             }
