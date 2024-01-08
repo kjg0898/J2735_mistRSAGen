@@ -85,23 +85,6 @@ public class RsaValueCreator {
                         continue; // 현재 생성을 건너뛰고 다음 메세지를 생성합니다.
                     }
                         rsaMessage.put("description", descriptionValues);
-                        //  String categoryName = null;
-                        //  String vehicleState = null;
-                        //  if (uuidMap.containsKey("instance_categoryName")) {
-                        //      categoryName = (String) uuidMap.get("instance_categoryName");  // instance.json에서 추출
-                        //  } else {
-                        //      categoryName = "0";
-                        //  }
-                        //  if (uuidMap.containsKey("frameAnnotation_attribute") && uuidMap.get("frameAnnotation_attribute") != null) {
-                        //      Map<String, Object> frameAnnotationAttribute = (Map<String, Object>) uuidMap.get("frameAnnotation_attribute"); // frame_annotation.json에서 추출
-                        //      vehicleState = (String) frameAnnotationAttribute.get("vehicle_state");
-                        //  } else {
-                        //      vehicleState = "0";
-                        //  }
-                        //  List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState);
-                        //  rsaMessage.put("description", descriptionValues);
-                        //  여기까지가 ITIScode 할당 하는 로직
-
 
                         rsaMessage.put("priority", "01");
                         rsaMessage.put("heading", heading);   //sensor.json 의 rotation
