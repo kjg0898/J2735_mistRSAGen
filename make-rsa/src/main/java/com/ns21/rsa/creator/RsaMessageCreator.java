@@ -1,6 +1,7 @@
 package com.ns21.rsa.creator;
 
 import com.ns21.common.enums.j2735.J2735MessageID;
+import com.ns21.common.itis.ItisCodes;
 import com.ns21.common.mist.codec.J2735ToJson;
 import com.ns21.common.mist.codec.JsonToJ2735;
 import com.ns21.common.mist.parser.MetaDataExtracting;
@@ -88,40 +89,46 @@ public class RsaMessageCreator extends AbstractVerticle {
             logger.error("Error in message processing", e);
         }
     }
-    public static List<Integer> ITISRSACodeGen(String categoryName, String vehicleState, Integer visibilityLevel) {
+
+    public static List<Integer> ITISRSACodeGen(String categoryName, String vehicleState) {
         List<Integer> itisCodes = new ArrayList<>();
 
         categoryName = (categoryName != null) ? categoryName : "0";
         vehicleState = (vehicleState != null) ? vehicleState : "0";
-        visibilityLevel = (visibilityLevel != null) ? visibilityLevel : 0;
 
+        //instance_categoryName의 값은 하기와 같다
         switch (categoryName) {
-            case "emergencyVehicle":
-                itisCodes.add(123);
+            case "dynamic_object.vehicle.truck":
+                itisCodes.add(ItisCodes.HAZARDOUS_MATERIAL_VEHICLE);
+                break;
+            case "dynamic_object.human.pedestrian":
+                itisCodes.add(ItisCodes.PEDESTRIAN_ON_ROAD);
+                break;
+            case "movable_object.barrier":
+                itisCodes.add(ItisCodes.ROAD_CLOSURE_LANE_BLOCKAGE);
+                break;
+            case "movable_object.traffic_cone":
+                itisCodes.add(ItisCodes.MOBILE_CONSTRUCTION);
                 break;
             default:
                 itisCodes.add(0); // categoryName이 없거나 일치하지 않을 때
                 break;
         }
 
+        //frameAnnotation_attribute 의 vehicle_state 값은 하기와 같다
+        //stopped
+        //moving
         switch (vehicleState) {
             case "moving":
-                itisCodes.add(456);
+                itisCodes.add(ItisCodes.STOP_AND_GO_TRAFFIC);
+                break;
+            case "stopped":
+                itisCodes.add(ItisCodes.STOPPED_VEHICLE);
                 break;
             default:
                 itisCodes.add(0); // vehicleState가 없거나 일치하지 않을 때
                 break;
         }
-
-        switch (visibilityLevel) {
-            case 4:
-                itisCodes.add(789);
-                break;
-            default:
-                itisCodes.add(0); // visibilityLevel이 없거나 일치하지 않을 때
-                break;
-        }
-
         return itisCodes;
     }
 

@@ -72,11 +72,10 @@ public class RsaValueCreator {
                     msgCnt = (msgCnt + 1) % 128;  // msgCnt가 127을 넘지 않도록 함
                     rsaMessage.put("timeStamp", minutesOfYear);
 
-                    // "description" 필드에 ITIScode 값을 할당합니다. 주의할 차량과 차량의 이동상태,가시성 낮음 추가해야함 itis 코드를 이용하여 로직 추가해야함 instance.json 의 category_name , frame_annotation.json 의  vehicle_state , frameannotation의 visibility_level
+                    // "description" 필드에 ITIScode 값을 할당합니다. 주의할 차량과 차량의 이동상태,가시성 낮음 추가해야함 itis 코드를 이용하여 로직 추가해야함 instance.json 의 category_name , frame_annotation.json 의  vehicle_state
                     rsaMessage.put("typeEvent", 0);
                     String categoryName = null;
                     String vehicleState = null;
-                    Integer visibilityLevel = null;
                     if (uuidMap.containsKey("instance_categoryName")) {
                         categoryName = (String) uuidMap.get("instance_categoryName");  // instance.json에서 추출
                     } else {
@@ -88,13 +87,9 @@ public class RsaValueCreator {
                     } else {
                         vehicleState = "0";
                     }
-                    if (uuidMap.containsKey("frameAnnotation_visibilityLevel")&& uuidMap.get("frameAnnotation_visibilityLevel") != null) {
-                        visibilityLevel = (Integer) uuidMap.get("frameAnnotation_visibilityLevel"); // frame_annotation.json에서 추출
-                    } else {
-                        visibilityLevel = 0;
-                    }
-                    List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState, visibilityLevel);
-                    rsaMessage.put("description", descriptionValues);  //  여기까지가 ITIScode 할당 하는 로직
+                    List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState);
+                    rsaMessage.put("description", descriptionValues);
+                    //  여기까지가 ITIScode 할당 하는 로직
 
 
                     rsaMessage.put("priority", "01");
@@ -137,9 +132,9 @@ public class RsaValueCreator {
     }
 
     public static List<Integer> getDescriptionValuesFromSomeSource(
-            String categoryName, String vehicleState, Integer visibilityLevel) {
+            String categoryName, String vehicleState) {
         // ITIS 코드 변환 함수를 호출하여 descriptionValues를 생성합니다.
-        return ITISRSACodeGen(categoryName, vehicleState, visibilityLevel);
+        return ITISRSACodeGen(categoryName, vehicleState);
     }
 
 }
