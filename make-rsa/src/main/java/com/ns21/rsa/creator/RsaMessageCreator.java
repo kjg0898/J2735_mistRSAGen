@@ -43,7 +43,7 @@ public class RsaMessageCreator extends AbstractVerticle {
         }
         // vehicleState에 대한 로직
         if (vehicleState != null && !vehicleState.equals("0")) {
-            Integer vehicleStateCode = ItisCodeMapper.getVehicleStateITISCode(vehicleState);
+            Integer vehicleStateCode = ItisCodeMapper.getAttributeITISCode(vehicleState);
             if (vehicleStateCode != null) { // 유효한 코드가 있을 경우에만 추가
                 itisCodes.add(vehicleStateCode);
             }
