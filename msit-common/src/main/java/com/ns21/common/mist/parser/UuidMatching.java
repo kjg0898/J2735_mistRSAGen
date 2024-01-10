@@ -6,9 +6,12 @@ import com.ns21.common.exception.JsonToJ2735Exception;
 import com.ns21.common.mist.dto.*;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * fileName       : UuidMatching.java
@@ -44,23 +47,23 @@ public class UuidMatching {
         Map<String, LogDto> logMap = createMapFromList(logList);
         Map<String, SensorDto> sensorMap = createMapFromList(sensorList);
 
-        frameDataList.parallelStream().forEach(frameData -> {
+
+        for (FrameDataDto frameData : frameDataList) {
+            FrameDto frame = frameMap.get(frameData.getFrameUuid());
             EgoPoseDto egoPose = egoPoseMap.get(frameData.getEgoPoseUuid());
             SensorDto sensor = sensorMap.get(frameData.getSensorUuid());
-            FrameDto frame = frameMap.get(frameData.getFrameUuid());
 
-            if (frame != null) {
-                DatasetDto dataset = datasetMap.get(frame.getDatasetUuid());
-                LogDto log = logMap.get(dataset.getLogUuid());
-
+            if (frame != null && egoPose != null && sensor != null) {
+                DatasetDto dataset = frame != null ? datasetMap.get(frame.getDatasetUuid()) : null;
+                LogDto log = dataset != null ? logMap.get(dataset.getLogUuid()) : null;
                 List<FrameAnnotationDto> relevantFrameAnnotations = frameAnnotationList.stream()
                         .filter(fa -> fa.getFrameDataUuid().equals(frameData.getUuid()))
-                        .toList();
+                        .collect(Collectors.toList());
+
                 for (FrameAnnotationDto frameAnnotation : relevantFrameAnnotations) {
                     InstanceDto instance = instanceMap.get(frameAnnotation.getInstanceUuid());
-
-                    if (egoPose != null && sensor != null && log != null && instance != null) {
-                        Map<String, Object> uuid;
+                    if (log != null && instance != null) {
+                        Map<String, Object> uuid = new LinkedHashMap<>();
                         try {
                             uuid = new LinkedHashMap<>(createPrefixedMap(dataset, "dataset"));
                         } catch (JsonToJ2735Exception e) {
@@ -110,14 +113,14 @@ public class UuidMatching {
                     }
                 }
             }
-        });
+        };
         return UuidList;
     }
 
     private static <T extends BaseDto> Map<String, T> createMapFromList(List<T> list) {
         return list.stream().collect(Collectors.toMap(T::getUuid, Function.identity(), (a, b) -> a));
     }
-
+//데이터 세트 UUID의 경우 "dataset_uuid"
     private static Map<String, Object> createPrefixedMap(Object dto, String prefix) throws JsonToJ2735Exception {
         Map<String, Object> prefixedMap = new LinkedHashMap<>();
         Field[] fields = dto.getClass().getDeclaredFields();
