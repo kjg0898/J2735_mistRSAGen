@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="log_dir" value="/logs"></property>
-    <property name="log_name" value="msit-common"></property>
+    <property name="log_dir" value="/logs"/>
+    <property name="log_name" value="msit-common"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <append>true</append>
         <file>${log_dir}/${log_name}.log</file>
 
         <encoder>
-            <charset>UTF-8</charset> <!-- 추가된 인코딩 설정 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %class.%M(%file:%line) - %msg%n</pattern>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %class:%line - %msg%n</pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -18,18 +18,17 @@
             <maxHistory>10</maxHistory>
             <maxFileSize>500MB</maxFileSize>
         </rollingPolicy>
-
-
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <charset>UTF-8</charset> <!-- 추가된 인코딩 설정 -->
-            pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level {%logger} - %class.%method:%line - %msg%n"
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %class:%line - %msg%n</pattern>
         </encoder>
     </appender>
+
     <root level="info">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
