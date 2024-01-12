@@ -80,7 +80,7 @@ public class RsaValueCreator {
                             ? (String) ((Map<String, Object>) uuidMap.get("frameAnnotation_attribute")).get("vehicle_state") : "0";
                     List<Integer> descriptionValues = getDescriptionValuesFromSomeSource(categoryName, vehicleState);
 
-                    // categoryName 또는 vehicleState가 유효하지 않은 경우 이 메시지를 건너뛰거나 생략함. "description"
+                    // categoryName 와 vehicleState가 둘다 유효하지 않은 경우 이 메시지를 건너뛰거나 생략함. "description"
                     if (descriptionValues.isEmpty()) {
                         continue; // 현재 생성을 건너뛰고 다음 메세지를 생성합니다.
                     }
